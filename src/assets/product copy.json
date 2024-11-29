@@ -1,0 +1,214 @@
+[
+    {
+      "id": "001",
+      "name": "Smart Productivity Planner",
+      "description": "A digital planner designed to boost productivity and time management. Integrates seamlessly with task management apps.",
+      "category": "Productivity Tools",
+      "price": 29.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/productivity-planner-front.jpg",
+        "https://example.com/images/productivity-planner-back.jpg"
+      ],
+      "features": [
+        "Customizable layouts",
+        "Daily, weekly, and monthly planning",
+        "Habit tracking"
+      ],
+      "stock": 150,
+      "sku": "PROD-PLN-001",
+      "tags": ["planner", "productivity", "digital tool"],
+      "release_date": "2024-01-15"
+    },
+    {
+      "id": "002",
+      "name": "Ergonomic Office Chair",
+      "description": "Comfortable, adjustable chair designed for long working hours. Helps improve posture and reduce back pain.",
+      "category": "Office Equipment",
+      "price": 199.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/office-chair-front.jpg",
+        "https://example.com/images/office-chair-side.jpg"
+      ],
+      "features": [
+        "Adjustable seat height",
+        "Lumbar support",
+        "Breathable mesh back"
+      ],
+      "stock": 75,
+      "sku": "OFF-EQU-002",
+      "tags": ["chair", "ergonomic", "office"],
+      "release_date": "2024-02-01"
+    },
+    {
+      "id": "003",
+      "name": "Wireless Noise-Cancelling Headphones",
+      "description": "High-quality headphones with active noise cancellation. Ideal for focusing in noisy environments.",
+      "category": "Audio Equipment",
+      "price": 129.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/headphones-front.jpg",
+        "https://example.com/images/headphones-side.jpg"
+      ],
+      "features": [
+        "Active noise cancellation",
+        "Bluetooth 5.2",
+        "20-hour battery life"
+      ],
+      "stock": 200,
+      "sku": "AUD-EQU-003",
+      "tags": ["headphones", "wireless", "noise-cancelling"],
+      "release_date": "2024-03-10"
+    },
+    {
+      "id": "004",
+      "name": "Adjustable Standing Desk",
+      "description": "A versatile standing desk that can be adjusted for sitting and standing positions. Enhances productivity and supports health.",
+      "category": "Office Equipment",
+      "price": 349.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/standing-desk-front.jpg",
+        "https://example.com/images/standing-desk-adjustable.jpg"
+      ],
+      "features": [
+        "Electric height adjustment",
+        "Spacious tabletop",
+        "Built-in cable management"
+      ],
+      "stock": 60,
+      "sku": "OFF-EQU-004",
+      "tags": ["desk", "standing", "adjustable"],
+      "release_date": "2024-04-01"
+    },
+ 
+    {
+      "id": "005",
+      "name": "Smart Water Bottle",
+      "description": "A water bottle that tracks your hydration and reminds you to drink water throughout the day.",
+      "category": "Health & Wellness",
+      "price": 49.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/smart-water-bottle-front.jpg",
+        "https://example.com/images/smart-water-bottle-side.jpg"
+      ],
+      "features": [
+        "Hydration reminders",
+        "Temperature display",
+        "Leak-proof design"
+      ],
+      "stock": 120,
+      "sku": "HW-WB-005",
+      "tags": ["water bottle", "hydration", "smart"],
+      "release_date": "2024-05-01"
+    },
+    {
+      "id": "006",
+      "name": "Electric Foot Massager",
+      "description": "An electric foot massager with multiple settings for relaxation and stress relief after a long day.",
+      "category": "Health & Wellness",
+      "price": 99.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/foot-massager-front.jpg",
+        "https://example.com/images/foot-massager-side.jpg"
+      ],
+      "features": [
+        "Multiple massage modes",
+        "Soothing heat function",
+        "Ergonomic design"
+      ],
+      "stock": 85,
+      "sku": "HW-FM-006",
+      "tags": ["massager", "foot care", "electric"],
+      "release_date": "2024-06-15"
+    },
+    {
+      "id": "007",
+      "name": "Portable Blender",
+      "description": "A compact, rechargeable blender for making smoothies and shakes on the go.",
+      "category": "Kitchen Appliances",
+      "price": 39.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/portable-blender-front.jpg",
+        "https://example.com/images/portable-blender-side.jpg"
+      ],
+      "features": [
+        "Rechargeable battery",
+        "Compact design",
+        "Easy to clean"
+      ],
+      "stock": 150,
+      "sku": "KA-BLEND-007",
+      "tags": ["blender", "portable", "smoothie"],
+      "release_date": "2024-07-01"
+    },
+    {
+      "id": "008",
+      "name": "Smart Thermostat",
+      "description": "A Wi-Fi enabled smart thermostat that adapts to your schedule to optimize heating and cooling in your home.",
+      "category": "Smart Home",
+      "price": 119.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/smart-thermostat-front.jpg",
+        "https://example.com/images/smart-thermostat-back.jpg"
+      ],
+      "features": [
+        "Wi-Fi connectivity",
+        "Energy-saving features",
+        "Voice control compatibility"
+      ],
+      "stock": 200,
+      "sku": "SH-THERMO-008",
+      "tags": ["thermostat", "smart home", "Wi-Fi"],
+      "release_date": "2024-08-15"
+    },
+    {
+      "id": "009",
+      "name": "LED Desk Lamp",
+      "description": "An adjustable LED desk lamp with touch controls, ideal for work or study environments.",
+      "category": "Home Office",
+      "price": 49.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/led-desk-lamp-front.jpg",
+        "https://example.com/images/led-desk-lamp-side.jpg"
+      ],
+      "features": [
+        "Touch-sensitive control",
+        "Adjustable brightness",
+        "Eye-care technology"
+      ],
+      "stock": 180,
+      "sku": "HO-LAMP-009",
+      "tags": ["desk lamp", "LED", "adjustable"],
+      "release_date": "2024-09-01"
+    },
+    {
+      "id": "010",
+      "name": "Fitness Tracker Watch",
+      "description": "A sleek fitness tracker watch that tracks steps, heart rate, and sleep patterns.",
+      "category": "Fitness & Wellness",
+      "price": 79.99,
+      "currency": "USD",
+      "images": [
+        "https://example.com/images/fitness-tracker-front.jpg",
+        "https://example.com/images/fitness-tracker-wrist.jpg"
+      ],
+      "features": [
+        "Heart rate monitoring",
+        "Sleep tracking",
+        "Water-resistant"
+      ],
+      "stock": 300,
+      "sku": "FW-TRACK-010",
+      "tags": ["fitness", "tracker", "smartwatch"],
+      "release_date": "2024-10-05"
+    }
+  ]
+  
