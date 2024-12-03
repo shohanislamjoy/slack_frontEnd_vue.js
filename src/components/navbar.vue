@@ -24,7 +24,7 @@ const is_active = (route_path) => {
         <ul class="hidden md:flex px-4 mx-auto font-semibold font-heading space-x-12">
           <li><RouterLink :class="[is_active('/') ? 'bg-[#4e5c5a]':'hover:text-gray-200', 'p-2' ,'rounded-lg']" to="/">Home</RouterLink></li>
           <li><RouterLink :class="[is_active('/catagory') ? 'bg-[#4e5c5a]':'hover:text-gray-200', 'p-2' ,'rounded-lg']" to="#">Catagory</RouterLink></li>
-          <li><RouterLink :class="[is_active('/product') ? 'bg-[#4e5c5a]':'hover:text-gray-200', 'p-2' ,'rounded-lg']" to="/product">Products</RouterLink></li>
+          <li><RouterLink :class="[is_active('/products') ? 'bg-[#4e5c5a]':'hover:text-gray-200', 'p-2' ,'rounded-lg']" to="/products">Products</RouterLink></li>
           <li><RouterLink :class="[is_active('/contact_us') ? 'bg-[#4e5c5a]':'hover:text-gray-200', 'p-2' ,'rounded-lg']" to="/contact_us">Contact Us</RouterLink></li>
         </ul>
         <!-- Header Icons -->

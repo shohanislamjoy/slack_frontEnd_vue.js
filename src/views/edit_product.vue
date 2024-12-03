@@ -1,120 +1,106 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import api from '@/axios'; // Import the axios instance
+import api from '@/axios'; // Your Axios instance
 
-const route = useRoute();
-const router = useRouter();
-const productId = route.params.id; // Get product ID from the route
-const isEditMode = !!productId; // Determine if the page is in edit mode
-
-const product = reactive({
+// Reactive data for the form
+const editProduct = reactive({
   id: '',
   title: '',
   description: '',
   price: '',
   currency: 'USD',
+  images: [], // For additional image data
   features: [''],
   stock: '',
-  image: null, // File upload
-  existingImage: '', // For displaying the existing image in edit mode
+  image: null,
 });
 
-// Dynamic title based on mode
-const pageTitle = ref(isEditMode ? 'Edit Product' : 'Add New Product');
+// Route and Router hooks
+const route = useRoute();
+const router = useRouter();
+const productId = route.params.id; // Get the product ID from the route
 
-// Fetch product details if editing
-const fetchProductDetails = async () => {
-  if (isEditMode) {
-    try {
-      const response = await api.get(`/products/${productId}`);
-      const data = response.data.data;
-
-      // Populate the form with the existing product data
-      Object.assign(product, {
-        id: data.id,
-        title: data.title,
-        description: data.description,
-        price: data.price,
-        currency: data.currency,
-        features: data.features || [''],
-        stock: data.stock,
-        existingImage: data.image,
-      });
-    } catch (error) {
-      console.error('Error fetching product details:', error);
-      alert('Failed to fetch product details.');
-    }
-  }
-};
-
-// Add or Update Product
-const saveProduct = async () => {
+// Fetch product details
+const fetchProduct = async () => {
   try {
-    const formData = new FormData();
-    formData.append('title', product.title);
-    formData.append('description', product.description);
-    formData.append('price', product.price);
-    formData.append('currency', product.currency);
-    formData.append('stock', product.stock);
-    formData.append('features', JSON.stringify(product.features));
-    if (product.image) {
-      formData.append('image', product.image); // Only upload new image if selected
-    }
+    const response = await api.get(`/products/${productId}`);
+    const product = response.data.data;
 
-    if (isEditMode) {
-      // Update Product
-      await api.put(`/products/${productId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      alert('Product updated successfully!');
-    } else {
-      // Create Product
-      await api.post('/products', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      alert('Product added successfully!');
-    }
-
-    router.push('/products'); // Redirect after save
+    // Populate form fields
+    editProduct.id = product.id;
+    editProduct.title = product.title;
+    editProduct.description = product.description;
+    editProduct.price = product.price;
+    editProduct.currency = product.currency;
+    editProduct.imageUrl = product.image || null; // For displaying the existing image
+    editProduct.features = product.features || [''];
+    editProduct.stock = product.stock || '';
   } catch (error) {
-    console.error('Error saving product:', error);
-    alert('Failed to save product. Please try again.');
+    console.error('Error fetching product:', error);
+    alert('Failed to fetch product details.');
   }
 };
 
-// Add or Remove Features
-const addFeature = () => product.features.push('');
+// Add a feature
+const addFeature = () => {
+  editProduct.features.push('');
+};
+
+// Remove a feature
 const removeFeature = (index) => {
-  if (product.features.length > 1) {
-    product.features.splice(index, 1);
+  if (editProduct.features.length > 1) {
+    editProduct.features.splice(index, 1);
   } else {
     alert('At least one feature is required.');
   }
 };
 
-// Handle Image Upload
+// Handle image upload
 const handleImageUpload = (event) => {
-  product.image = event.target.files[0];
+  editProduct.image = event.target.files[0];
 };
 
-// Initialize Component
-onMounted(fetchProductDetails);
+// Update product
+const updateProduct = async () => {
+  try {
+    const formData = new FormData();
+    formData.append('title', editProduct.title);
+    formData.append('description', editProduct.description);
+    formData.append('price', editProduct.price);
+    formData.append('currency', editProduct.currency);
+    formData.append('image', editProduct.image);
+    formData.append('features', JSON.stringify(editProduct.features));
+    formData.append('stock', editProduct.stock);
+
+    await api.post(`/products/${productId}?_method=PUT`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    alert('Product updated successfully!');
+    router.push('/products'); // Redirect to the products page
+  } catch (error) {
+    console.error('Error updating product:', error);
+    alert('Failed to update product.');
+  }
+};
+
+// Fetch product details on component mount
+onMounted(fetchProduct);
 </script>
 
 <template>
   <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-6">{{ pageTitle }}</h2>
-    <form @submit.prevent="saveProduct" class="space-y-4">
-      <!-- Product Name -->
+    <h2 class="text-2xl font-bold mb-6">Edit Product</h2>
+    <form @submit.prevent="updateProduct" class="space-y-4">
+      <!-- Name -->
       <div>
         <label for="title" class="block text-sm font-medium text-gray-700">Product Name</label>
         <input
           id="title"
-          v-model="product.title"
+          v-model="editProduct.title"
           type="text"
           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter product name"
           required
         />
       </div>
@@ -124,10 +110,9 @@ onMounted(fetchProductDetails);
         <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
         <textarea
           id="description"
-          v-model="product.description"
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter product description"
+          v-model="editProduct.description"
           rows="4"
+          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           required
         ></textarea>
       </div>
@@ -138,11 +123,10 @@ onMounted(fetchProductDetails);
           <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
           <input
             id="price"
-            v-model="product.price"
+            v-model="editProduct.price"
             type="number"
             step="0.01"
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter product price"
             required
           />
         </div>
@@ -151,7 +135,7 @@ onMounted(fetchProductDetails);
           <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
           <select
             id="currency"
-            v-model="product.currency"
+            v-model="editProduct.currency"
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="USD">USD</option>
@@ -161,35 +145,36 @@ onMounted(fetchProductDetails);
         </div>
       </div>
 
-      <!-- Image Upload -->
+          <!-- Image Display and Upload -->
       <div>
-        <label for="image" class="block text-sm font-medium text-gray-700">Upload Image</label>
+        <label for="image" class="block text-xl font-bold text-gray-700">Upload Image</label>
+
+        <!-- Display Existing Image -->
+        <div v-if="editProduct.imageUrl" class="mt-2">
+          <p class="text-sm text-gray-600">Current Image:</p>
+          <img :src="editProduct.imageUrl" alt="Existing Product Image" class="w-32 h-32 object-cover rounded border" />
+        </div>
+
+        <!-- File Input for Uploading New Image -->
         <input
           id="image"
           type="file"
           @change="handleImageUpload"
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           accept="image/*"
         />
-        <!-- Show existing image in edit mode -->
-        <img
-          v-if="isEditMode && product.existingImage"
-          :src="product.existingImage"
-          alt="Current Product Image"
-          class="mt-4 w-32 h-32 object-cover rounded-md"
-        />
       </div>
+
 
       <!-- Features -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Features</label>
-        <div v-for="(feature, index) in product.features" :key="index" class="flex items-center gap-2 mt-2">
+        <div v-for="(feature, index) in editProduct.features" :key="index" class="flex items-center gap-2 mt-2">
           <input
-            v-model="product.features[index]"
+            v-model="editProduct.features[index]"
             type="text"
             class="flex-grow border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter feature"
-            required
+            placeholder="Feature"
           />
           <button
             type="button"
@@ -213,10 +198,9 @@ onMounted(fetchProductDetails);
         <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
         <input
           id="stock"
-          v-model="product.stock"
+          v-model="editProduct.stock"
           type="number"
           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter stock quantity"
         />
       </div>
 
@@ -225,7 +209,7 @@ onMounted(fetchProductDetails);
         type="submit"
         class="w-full py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600"
       >
-        {{ isEditMode ? 'Update Product' : 'Add Product' }}
+        Update Product
       </button>
     </form>
   </div>

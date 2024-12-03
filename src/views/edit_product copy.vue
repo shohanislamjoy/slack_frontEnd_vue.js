@@ -1,120 +1,117 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
-import api from '@/axios'; // Import the axios instance you just created
+import { useRoute, useRouter } from 'vue-router';
+import api from '@/axios'; // Import the axios instance
 
-const newProduct = reactive({
-  id: '', // Auto-generated ID
+const route = useRoute();
+const router = useRouter();
+const productId = route.params.id; // Get product ID from the route
+const isEditMode = !!productId; // Determine if the page is in edit mode
+
+const product = reactive({
+  id: '',
   title: '',
   description: '',
   price: '',
   currency: 'USD',
-  images: [],
-  features: [''], // Initialize with one empty feature
+  features: [''],
   stock: '',
-  image: null, // Image file to be uploaded
+  image: null, // File upload
+  existingImage: '', // For displaying the existing image in edit mode
 });
 
-// Auto-increment ID logic
-const productCounter = ref(0); // Local counter for auto-increment
+// Dynamic title based on mode
+const pageTitle = ref(isEditMode ? 'Edit Product' : 'Add New Product');
 
-const fetchCurrentCounter = async () => {
-  try {
-    const response = await api.get(`/products`); // Use the axios instance
-    // Set counter based on the largest ID if available, or default to 1
-    const ids = response.data.map(product => parseInt(product.id, 10)).filter(Number.isFinite);
-    productCounter.value = ids.length ? Math.max(...ids) + 1 : 1;
-  } catch (error) {
-    console.error('Error fetching current product counter:', error);
-    productCounter.value = 1; // Fallback to 1 if there's an error
+// Fetch product details if editing
+const fetchProductDetails = async () => {
+  if (isEditMode) {
+    try {
+      const response = await api.get(`/products/${productId}`);
+      const data = response.data.data;
+
+      // Populate the form with the existing product data
+      Object.assign(product, {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        price: data.price,
+        currency: data.currency,
+        features: data.features || [''],
+        stock: data.stock,
+        existingImage: data.image,
+      });
+    } catch (error) {
+      console.error('Error fetching product details:', error);
+      alert('Failed to fetch product details.');
+    }
   }
 };
 
-// Add a new feature field
-const addFeature = () => {
-  newProduct.features.push(''); // Add an empty string to the features array
+// Add or Update Product
+const saveProduct = async () => {
+  try {
+    const formData = new FormData();
+    formData.append('title', product.title);
+    formData.append('description', product.description);
+    formData.append('price', product.price);
+    formData.append('currency', product.currency);
+    formData.append('stock', product.stock);
+    formData.append('features', JSON.stringify(product.features));
+    if (product.image) {
+      formData.append('image', product.image); // Only upload new image if selected
+    }
+
+    if (isEditMode) {
+      // Update Product
+      await api.patch(`/products/${productId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      alert('Product updated successfully!');
+    } else {
+      // Create Product
+      await api.post('/products', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      alert('Product added successfully!');
+    }
+
+    router.push('/products'); // Redirect after save
+  } catch (error) {
+    console.error('Error saving product:', error);
+    alert('Failed to save product. Please try again.');
+  }
 };
 
-// Remove a feature field
+// Add or Remove Features
+const addFeature = () => product.features.push('');
 const removeFeature = (index) => {
-  if (newProduct.features.length > 1) {
-    newProduct.features.splice(index, 1); // Remove feature at the given index
+  if (product.features.length > 1) {
+    product.features.splice(index, 1);
   } else {
     alert('At least one feature is required.');
   }
 };
 
-// Handle image file selection
+// Handle Image Upload
 const handleImageUpload = (event) => {
-  newProduct.image = event.target.files[0]; // Store the selected file
+  product.image = event.target.files[0];
 };
 
-// Add Product Function
-const addProduct = async () => {
-  try {
-    // Set the product ID
-    newProduct.id = `${productCounter.value}`; // ID is a string based on the counter
-
-    // Prepare FormData to handle file upload
-    const formData = new FormData();
-    formData.append('title', newProduct.title);
-    formData.append('description', newProduct.description);
-    formData.append('price', newProduct.price);
-    formData.append('currency', newProduct.currency);
-    formData.append('image', newProduct.image); // Add the image file
-    formData.append('features', JSON.stringify(newProduct.features)); // You can send features as a JSON string
-    formData.append('stock', newProduct.stock); // Add the stock quantity
-
-    console.log('New Product:', newProduct);
-
-    // Post the product using the axios instance
-    const response = await api.post('/products', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data', // Set the correct content type for file upload
-      },
-    });
-    alert('Product added successfully!');
-
-    // Increment counter and reset form
-    productCounter.value++;
-    resetForm();
-  } catch (error) {
-    console.error('Error Adding Product:', error);
-    alert('Failed to add product. Please try again.');
-  }
-};
-
-// Reset form
-const resetForm = () => {
-  Object.assign(newProduct, {
-    id: '',
-    title: '',
-    description: '',
-    price: '',
-    currency: 'USD',
-    images: [],
-    features: [''], // Reset features to one empty feature
-    stock: '',
-    image: null, // Reset the image
-  });
-};
-
-// Fetch the initial counter on component mount
-onMounted(fetchCurrentCounter);
+// Initialize Component
+onMounted(fetchProductDetails);
 </script>
 
 <template>
   <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-6">Add New Product</h2>
-    <form @submit.prevent="addProduct" class="space-y-4">
-      <!-- ID (Auto-generated, hidden from user) -->
-      <input v-model="newProduct.id" type="hidden" />
-
-      <!-- Name -->
+    <h2 class="text-2xl font-bold mb-6">{{ pageTitle }}</h2>
+    <form @submit.prevent="saveProduct" class="space-y-4">
+      <!-- Product Name -->
       <div>
         <label for="title" class="block text-sm font-medium text-gray-700">Product Name</label>
         <input
           id="title"
-          v-model="newProduct.title"
+          v-model="product.title"
           type="text"
           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           placeholder="Enter product name"
@@ -127,7 +124,7 @@ onMounted(fetchCurrentCounter);
         <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
         <textarea
           id="description"
-          v-model="newProduct.description"
+          v-model="product.description"
           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           placeholder="Enter product description"
           rows="4"
@@ -141,7 +138,7 @@ onMounted(fetchCurrentCounter);
           <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
           <input
             id="price"
-            v-model="newProduct.price"
+            v-model="product.price"
             type="number"
             step="0.01"
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -154,7 +151,7 @@ onMounted(fetchCurrentCounter);
           <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
           <select
             id="currency"
-            v-model="newProduct.currency"
+            v-model="product.currency"
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="USD">USD</option>
@@ -173,16 +170,22 @@ onMounted(fetchCurrentCounter);
           @change="handleImageUpload"
           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           accept="image/*"
-          required
+        />
+        <!-- Show existing image in edit mode -->
+        <img
+          v-if="isEditMode && product.existingImage"
+          :src="product.existingImage"
+          alt="Current Product Image"
+          class="mt-4 w-32 h-32 object-cover rounded-md"
         />
       </div>
 
-      <!-- Features (Dynamic List) -->
+      <!-- Features -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Features</label>
-        <div v-for="(feature, index) in newProduct.features" :key="index" class="flex items-center gap-2 mt-2">
+        <div v-for="(feature, index) in product.features" :key="index" class="flex items-center gap-2 mt-2">
           <input
-            v-model="newProduct.features[index]"
+            v-model="product.features[index]"
             type="text"
             class="flex-grow border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter feature"
@@ -210,7 +213,7 @@ onMounted(fetchCurrentCounter);
         <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
         <input
           id="stock"
-          v-model="newProduct.stock"
+          v-model="product.stock"
           type="number"
           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           placeholder="Enter stock quantity"
@@ -222,7 +225,7 @@ onMounted(fetchCurrentCounter);
         type="submit"
         class="w-full py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600"
       >
-        Add Product
+        {{ isEditMode ? 'Update Product' : 'Add Product' }}
       </button>
     </form>
   </div>

@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import api from '@/axios'; // Import the axios instance
 import PacmanLoader from 'vue-spinner/src/PacmanLoader.vue'; // Loading spinner
 
@@ -11,7 +11,21 @@ const error = ref(null); // Tracks error state
 
 // Get the product ID from the route
 const route = useRoute();
+const router = useRouter();
 const productId = route.params.id;
+
+const edit_product =()=>{
+  router.push(`/edit_product/${productId}`);
+}
+const delete_product = async () => {
+  try {
+    await api.delete(`/products/${productId}`); // Delete product by ID
+    router.push('/products'); // Redirect to products page
+  } catch (err) {
+    console.error('Error Deleting Product:', err);
+    error.value = 'Failed to delete product. Please try again later.'; // Set error message
+  }
+};
 
 // Fetch product details on component mount
 onMounted(async () => {
@@ -73,6 +87,16 @@ onMounted(async () => {
             class="mt-6 w-full py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600"
           >
             Add to Cart
+          </button>
+          <button  @click="edit_product"
+            class="mt-6 w-full py-3 bg-[#22c55e] text-white font-semibold rounded-lg hover:bg-blue-600"
+          >
+            Edit Product
+          </button>
+          <button  @click="delete_product"
+            class="mt-6 w-full py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-blue-600"
+          >
+            Delete Product
           </button>
         </div>
       </div>

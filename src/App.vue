@@ -11,9 +11,9 @@ import { RouterView } from 'vue-router';
 <template>
 
 
-<navbar></navbar>
+<navbar/>
 <RouterView/>
-<footer_1></footer_1>
+<footer_1/>
 
 </template>
 
