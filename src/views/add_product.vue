@@ -1,13 +1,16 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
 import api from '@/axios'; // Import the axios instance you just created
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const newProduct = reactive({
   id: '', // Auto-generated ID
   title: '',
   description: '',
   price: '',
-  currency: 'USD',
+  currency: 'USD',  
   images: [],
   features: [''], // Initialize with one empty feature
   stock: '',
@@ -21,7 +24,7 @@ const fetchCurrentCounter = async () => {
   try {
     const response = await api.get(`/products`); // Use the axios instance
     // Set counter based on the largest ID if available, or default to 1
-    const ids = response.data.map(product => parseInt(product.id, 10)).filter(Number.isFinite);
+    const ids = response.data.data.map(product => parseInt(product.id, 10)).filter(Number.isFinite);
     productCounter.value = ids.length ? Math.max(...ids) + 1 : 1;
   } catch (error) {
     console.error('Error fetching current product counter:', error);
@@ -73,6 +76,7 @@ const addProduct = async () => {
       },
     });
     alert('Product added successfully!');
+    
 
     // Increment counter and reset form
     productCounter.value++;
